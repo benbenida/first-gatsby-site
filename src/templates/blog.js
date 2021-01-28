@@ -14,10 +14,12 @@ export const query = graphql`
          body {
             raw
             references {
-               contentful_id
-               title
-               file {
-                  url
+               ... on ContentfulAsset {
+                  contentful_id
+                  title
+                  file {
+                     url
+                  }
                }
             }
          }
@@ -27,42 +29,18 @@ export const query = graphql`
 
 const Blog = (props) => {
    const body = JSON.parse(props.data.contentfulBlogPost.body.raw);
-   // const options = {
-   //    renderNode: {
-   //      [BLOCKS.EMBEDDED_ASSET]: node => {
-   //        const imageID = node.data.target.sys.id;
-   //        const {
-   //          file: { url },
-   //          title,
-   //        } = references.find(({ contentful_id: id }) => {
-   //          return id === imageID;
-   //        });
-  
-   //        return <img src={url} alt={title}  />;
-   //      },
-   //    },
-   //  };
-   // const options = {
-   //    renderNode: {
-   //       [BLOCKS.EMBEDDED_ASSET]: node => {
-   //          const imageID = node.data.target.sys.id;
-   //          const {
-   //             file: {url}, 
-   //             title
-   //          } = references.find(({contentful_id: id}) => id === imageID);
 
-   //          return <img src={url} alt={title} />
-   //       }
-   //    }
-   // }
    const options = {
       renderNode: {
-         "embedded-asset-block": (node) => {
+         [BLOCKS.EMBEDDED_ASSET]: node => {
             console.log(node);
-            const alt = '';
-            const url = '';
+            const imageID = node.data.target.sys.id;
+            const {
+               file: {url}, 
+               title
+            } = props.data.contentfulBlogPost.body.references.find(({contentful_id: id}) => id === imageID);
 
-            return <img src={url} alt={alt} />
+            return <img src={url} alt={title} />
          }
       }
    }
